@@ -1,0 +1,9 @@
+.*
+!.gitignore
+build.sbt
+LICENSE
+ls-scala-coacoas.sublime-project
+sbt
+target
+UNIX-ls.sublime-project
+UNIX-ls.sublime-workspace
