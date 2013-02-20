@@ -1,32 +1,43 @@
 (ns ls-clojure-coacoas.core)
-(require '[clojure.java.io :as io])
+(use 'clj-time.coerce 'clj-time.format )
+(require '[clojure.java.io :as io]
+         '[clojure.pprint :as pp])
+(import 'java.util.Date)
 
-(defn directory? [dir] (.isDirectory dir))
+(defn format-date [pattern]
+  (fn [date-time] (unparse (formatter pattern) date-time)))
 
 (defn attrs [file]
   {:size (.length file)
-   :lastModified (.lastModified file)
+   :lastModified ((format-date "MM/dd/yyyy hh:mm a") (from-long (.lastModified file)))
    :name (.getName file)
    :type (cond 
            (.isDirectory file) 'directory
            (.isFile file)      'file
            :else               'link)})
+  
+(defn file-to-string [attrs]
+  (format "%-30s%-12s%10s%10s" (:name attrs) (:size attrs) (:lastModified attrs) (:type attrs)))
 
-(defn show [full? file]
-  (if full? 
-    (clojure.string/join \tab (map #(% file) [:name :size :lastModified :type]))
-    (:name file)))
+(defn list-element-to-string [e]
+  (if (:files e)
+    (clojure.string/join "\n" (cons (.getAbsolutePath (:dir e)) 
+          (map file-to-string (sort-by :name (map attrs (:files e))))))))
 
-(defn files [dir]
-  {:dir dir 
-   :files (.listFiles dir)})
-
-(defn list-files 
+(defn list-files [dir]
+  {:dir dir :files (vec (.listFiles dir))})
+  
+(defn get-file-attrs 
   "List files in the specified directories"
   [dirs]
-  (map (comp files io/as-file) dirs))
+  (map (comp list-files io/as-file) dirs))
 
 (defn -main
   "List files in the files/directories specified in the args"
   [& args]
-  (list-files args))
+  (print 
+    (clojure.string/join
+      "\n"
+      (map list-element-to-string (get-file-attrs args)))))
+
+;(print (clojure.string/join "\n" (map list-element-to-string(get-file-attrs ["/home/bcarlson/"]))))

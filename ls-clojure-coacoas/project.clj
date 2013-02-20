@@ -3,4 +3,5 @@
   :url "http://github.com/coacoas/UNIX-ls"
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [clj-time "0.4.4"]]
-  :plugins [[no-man-is-an-island/lein-eclipse "2.0.0"]])
+  :plugins [[no-man-is-an-island/lein-eclipse "2.0.0"]]
+  :main "ls-clojure-coacoas.core")
