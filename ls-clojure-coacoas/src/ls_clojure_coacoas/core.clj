@@ -32,12 +32,13 @@
   [dirs]
   (map (comp list-files io/as-file) dirs))
 
+(defn with-default [coll default] 
+  (if (empty? coll) default coll))
+
 (defn -main
   "List files in the files/directories specified in the args"
   [& args]
   (print 
     (clojure.string/join
       "\n"
-      (map list-element-to-string (get-file-attrs args)))))
-
-;(print (clojure.string/join "\n" (map list-element-to-string(get-file-attrs ["/home/bcarlson/"]))))
+      (map list-element-to-string (get-file-attrs (with-default args ["."]))))))
